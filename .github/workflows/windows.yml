@@ -57,3 +57,18 @@ jobs:
               with:
                 name: "randomfortune_macos"
                 path: build/macos/Build/Products/Release/randomfortune.app
+    build4android:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  channel: beta
+            - run: flutter build apk
+            - name: update
+              uses: actions/upload-artifact@v4
+              with:
+                name: "randomfortune_android"
+                path: build/app/outputs/flutter-apk/app-release.apk
