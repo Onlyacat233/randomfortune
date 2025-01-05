@@ -1,4 +1,4 @@
-name: build for windows
+name: build for all platforms
 
 on:
     push:
@@ -6,13 +6,61 @@ on:
     workflow_dispatch:
 
 jobs:
-  main:
-    runs-on: windows-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: dev
-      - run: flutter build windows
+    build4iOS:
+        runs-on: macos-latest
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  channel: beta
+            - run: flutter pub get
+            - run: flutter test
+            - run: flutter build ios --release --no-codesign
+
+    build4Windows:
+        runs-on: windows-latest
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  channel: beta
+            - run: flutter build windows
+            - name: update
+              uses: actions/upload-artifact@v4
+              with:
+                name: "randomfortune_windows"
+                path: build/windows/x64/release/bundle/randomfortune
+
+    build4Linux:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  channel: beta
+            - run: |
+                  sudo apt-get update -y
+                  sudo apt-get install -y ninja-build libgtk-3-dev gstreamer
+            - run: flutter build linux
+            - name: update
+              uses: actions/upload-artifact@v4
+              with:
+                name: "randomfortune_linux"
+                path: build/linux/x64/release/bundle/randomfortune
+
+    build4macOS:
+        runs-on: macos-latest
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  channel: beta
+            - run: flutter build macos
