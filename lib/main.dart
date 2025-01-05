@@ -1,4 +1,4 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:async';
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   var namelist = <String>[];
   int _index = 0;
   late Timer _timer;
-  StartedNotifier startedNotifier = StartedNotifier();
+  final StartedNotifier startedNotifier = StartedNotifier();
   final AudioPlayer player = AudioPlayer();
 
   void _updateCurrentText(timer) {
@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
     if (File(namelistPath).existsSync()) {
       namelist = File(namelistPath).readAsStringSync().split("\n");
     }
-    player.setSource(AssetSource("./background.mp3"));
+    player.setUrl("asset:///assets/background.mp3");
 
     return Scaffold(
       body: Center(
@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           startedNotifier.changeStartedStatus();
           if (startedNotifier.isStarted) {
-            player.resume();
+            player.play();
             _timer = Timer.periodic(
               Duration(milliseconds: 10),
               _updateCurrentText,
