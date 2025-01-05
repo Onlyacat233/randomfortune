@@ -56,9 +56,10 @@ class _HomePageState extends State<HomePage> {
           builder:
               (context, child) => Text(
                 startedNotifier.currentText,
-                style: DefaultTextStyle.of(
-                  context,
-                ).style.apply(fontSizeFactor: 30, fontFamily: "Lishu"),
+                style: DefaultTextStyle.of(context).style.apply(
+                  fontSizeFactor: MediaQuery.of(context).size.width / 70,
+                  fontFamily: "Lishu",
+                ),
               ),
         ),
       ),
