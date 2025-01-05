@@ -55,5 +55,5 @@ jobs:
             - name: update
               uses: actions/upload-artifact@v4
               with:
-                name: "allmusic_server_neoforge_1_21"
+                name: "randomfortune_macos"
                 path: build/macos/Build/Products/Release/randomfortune.app
