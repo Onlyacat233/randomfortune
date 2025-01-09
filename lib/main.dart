@@ -1,11 +1,15 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:logging/logging.dart';
 import 'dart:io';
 import 'dart:async';
 
 const namelistPath = "./namelist.txt";
+Logger logger = Logger("Random Fortune");
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   runApp(const App());
 }
 
@@ -35,8 +39,16 @@ class _HomePageState extends State<HomePage> {
   var namelist = <String>[];
   int _index = 0;
   late Timer _timer;
-  StartedNotifier startedNotifier = StartedNotifier();
-  final AudioPlayer player = AudioPlayer();
+  final StartedNotifier startedNotifier = StartedNotifier();
+  final Player player = Player(
+    configuration: PlayerConfiguration(
+      title: "Random Fortune!",
+      ready: () {
+        logger.fine("Player was Initialized");
+      },
+    ),
+  );
+  final Playable music = Media("asset://assets/background.mp3");
 
   void _updateCurrentText(timer) {
     startedNotifier.changeCurrentText(namelist[_index++ % namelist.length]);
@@ -47,7 +59,9 @@ class _HomePageState extends State<HomePage> {
     if (File(namelistPath).existsSync()) {
       namelist = File(namelistPath).readAsStringSync().split("\n");
     }
-    player.setSource(AssetSource("./background.mp3"));
+    player.setPlaylistMode(PlaylistMode.loop);
+    player.open(music);
+    player.pause();
 
     return Scaffold(
       body: Center(
@@ -67,20 +81,24 @@ class _HomePageState extends State<HomePage> {
         child: ListenableBuilder(
           listenable: startedNotifier,
           builder:
-              (context, child) => Text(startedNotifier.isStarted ? "暂停" : "开始"),
+              (context, child) => Text(
+                startedNotifier.isStarted ? "暂停" : "开始",
+                style: DefaultTextStyle.of(
+                  context,
+                ).style.apply(fontSizeDelta: 8),
+              ),
         ),
         onPressed: () {
           startedNotifier.changeStartedStatus();
           if (startedNotifier.isStarted) {
-            player.resume();
             _timer = Timer.periodic(
               Duration(milliseconds: 10),
               _updateCurrentText,
             );
           } else {
             _timer.cancel();
-            player.pause();
           }
+          player.playOrPause();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
